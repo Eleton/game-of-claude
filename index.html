@@ -30,8 +30,8 @@
       grid-template-columns: repeat(20, 24px);
       grid-template-rows: repeat(20, 24px);
       gap: 1px;
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(200, 200, 200, 0.5);
+      border: 1px solid rgba(200, 200, 200, 0.5);
     }
     .cell {
       width: 24px;
@@ -80,12 +80,12 @@
           let count = 0;
           for (const [dr, dc] of NEIGHBORS) {
             const nr = r + dr, nc = c + dc;
-            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && grid[nr][nc] === 255) count++;
+            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && grid[nr][nc] === 200) count++;
           }
-          const wasAlive = grid[r][c] === 255;
+          const wasAlive = grid[r][c] === 200;
           const survives = wasAlive ? (count === 2 || count === 3) : (count === 3);
           if (survives) {
-            next[r][c] = 255;
+            next[r][c] = 200;
           } else {
             const faded = Math.floor(grid[r][c] / 2);
             next[r][c] = faded <= 1 ? 0 : faded;
@@ -122,7 +122,7 @@
                      : setBlueLayer;
         setter(g => {
           const copy = g.map(row => [...row]);
-          copy[r][c] = copy[r][c] === 255 ? 0 : 255;
+          copy[r][c] = copy[r][c] === 200 ? 0 : 200;
           return copy;
         });
       };
@@ -137,7 +137,7 @@
 
       const randomize = () => {
         const randLayer = () => Array.from({ length: ROWS }, () =>
-          Array.from({ length: COLS }, () => Math.random() > 0.7 ? 255 : 0)
+          Array.from({ length: COLS }, () => Math.random() > 0.7 ? 200 : 0)
         );
         setRedLayer(randLayer());
         setGreenLayer(randLayer());
