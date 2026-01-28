@@ -69,7 +69,7 @@
     const COLS = 20;
     const INTERVAL = 500;
 
-    const emptyLayer = () => Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+    const emptyLayer = () => Array.from({ length: ROWS }, () => Array(COLS).fill(0));
 
     const NEIGHBORS = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
 
@@ -80,9 +80,16 @@
           let count = 0;
           for (const [dr, dc] of NEIGHBORS) {
             const nr = r + dr, nc = c + dc;
-            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && grid[nr][nc]) count++;
+            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && grid[nr][nc] === 255) count++;
           }
-          next[r][c] = grid[r][c] ? (count === 2 || count === 3) : (count === 3);
+          const wasAlive = grid[r][c] === 255;
+          const survives = wasAlive ? (count === 2 || count === 3) : (count === 3);
+          if (survives) {
+            next[r][c] = 255;
+          } else {
+            const faded = Math.floor(grid[r][c] / 2);
+            next[r][c] = faded <= 1 ? 0 : faded;
+          }
         }
       }
       return next;
@@ -115,7 +122,7 @@
                      : setBlueLayer;
         setter(g => {
           const copy = g.map(row => [...row]);
-          copy[r][c] = !copy[r][c];
+          copy[r][c] = copy[r][c] === 255 ? 0 : 255;
           return copy;
         });
       };
@@ -130,7 +137,7 @@
 
       const randomize = () => {
         const randLayer = () => Array.from({ length: ROWS }, () =>
-          Array.from({ length: COLS }, () => Math.random() > 0.7)
+          Array.from({ length: COLS }, () => Math.random() > 0.7 ? 255 : 0)
         );
         setRedLayer(randLayer());
         setGreenLayer(randLayer());
@@ -139,10 +146,9 @@
       };
 
       const cellColor = (r, c) => {
-        const rv = redLayer[r][c] ? 255 : 0;
-        const gv = greenLayer[r][c] ? 255 : 0;
-        const bv = blueLayer[r][c] ? 255 : 0;
-        if (rv === 0 && gv === 0 && bv === 0) return '#000000';
+        const rv = redLayer[r][c];
+        const gv = greenLayer[r][c];
+        const bv = blueLayer[r][c];
         return `rgb(${rv},${gv},${bv})`;
       };
 
